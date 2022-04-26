@@ -79,7 +79,7 @@ const argv = yargs(hideBin(process.argv))
     })
 
     .option('brotli', {
-        describe: 'Enable Brotli compress warm up (Requested by all modern browsers)',
+        describe: 'Enable Brotli compress warm up (Used by all modern browsers, "Accept Encoding: gzip, deflate, br")',
         type: 'boolean',
         coerce: toBoolean,
         default: true
@@ -111,7 +111,7 @@ const argv = yargs(hideBin(process.argv))
 
     .option('pae', {
         alias: 'purge_all_encodings',
-        describe: 'Use with nginx proxy-cache, not needed for nginx fast-cgi-cache or varnish.',
+        describe: 'Use with Nginx proxy cache, not needed for Nginx Fast-CGI cache or Varnish. Nginx proxy cache keeps one copy of response for each unique "Accept Encoding" header value.',
         type: 'boolean',
         coerce: toBoolean,
         default: false
@@ -119,17 +119,17 @@ const argv = yargs(hideBin(process.argv))
 
     .option('headers', {
         default: {},
-        describe: 'Add custom headers with warmup request.',
+        describe: 'Add custom headers with warmup request. For instance Host, Authorization, User-Agent etc.',
     })
 
     .option('cache_status_header', {
-        describe: 'Header for cache status, can be used with Nginx.',
+        describe: 'Header for cache status, can be used with Nginx to detect and log cache HIT, MISS, BYPASS etc.',
         type: 'string',
         default: 'x-cache-status'
     })
 
     .option('ip', {
-        describe: 'IP to call with host header as SNI to use correct SSL/TLS cert.',
+        describe: 'IP to call with Host header so SNI will work and correct SSL/TLS cert will be used.',
         type: 'string',
         coerce: toIP,
         default: ''

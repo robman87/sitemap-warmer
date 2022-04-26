@@ -84,24 +84,25 @@ warmup datuan.dev <URL> <parameter>
 | Parameter               | Description                                                                                                           | Default           |
 |------------------------ |---------------------------------------------------------------------------------------------------------------------  |-----------------  |
 | `-a`, `--all`           | Warm up all URLs in sitemap                                                                                           | False             |
-| `-r`, `--range`         | Only warm up URLs with `lastMod` newer than X seconds.<br> This parameters is ignored if `-a` (`--all`) is provided   | 300s (5 minutes)  |
-| `-d`, `--delay`         | Delay (in milliseconds) between each warm up call.<br> If you using the low-end hosting, keep this value higher       | 500               |
-| `--images`              | Enables images warm up                                                                                                | True              |
-| `--webp`                | Enables webp images warm up                                                                                           | True              |
-| `--avif`                | Enables avif images warm up                                                                                           | True              |
+| `-r`, `--range`         | Only warm up URLs with `lastMod` newer than X seconds.<br> This parameters is ignored if `-a` (`--all`) is provided.  | 300s (5 minutes)  |
+| `-d`, `--delay`         | Delay (in milliseconds) between each warm up call.<br> If you using the low-end hosting, increase this value.         | 500               |
+| `--img`, `--images`     | Enables images warm up                                                                                                | True              |
+| `--webp`                | Enables WebP images warm up                                                                                           | True              |
+| `--avif`                | Enables Avif images warm up                                                                                           | True              |
 | `--css`                 | Enables CSS warm up                                                                                                   | True              |
 | `--js`                  | Enables Javascript warm up                                                                                            | True              |
-| `--brotli`              | Enables Brotli compression warm up (all modern browsers support it)                                                   | True              |
+| `--brotli`              | Enable Brotli compress warm up. Used by all modern browsers, "Accept Encoding: gzip, deflate, br".                    | True              |
 | `-q`, `--quiet`         | Suppress the debug log                                                                                                | False             |
-| `-h`, `--headers`       | Add custom headers                                                                                                    | None              |
-| `-p`, `--purge`         | Purge resource before warm up, 1 >= content, 2 >= images                                                              | 0                 |
+| `-h`, `--headers`       | Add custom headers, for instance Host, Authorization, User-Agent etc.                                                 | None              |
+| `-p`, `--purge`         | Purge resource before warm up, 0 = purging disabled, 1 >= content, 2 >= images                                        | 0                 |
 | `--pd`, `--purge_delay` | Delay (in milliseconds) after purging resource before warm up                                                         | 100               |
-| `--pp`, `--purge_path`  | Path to purge resource using GET method before warm up                                                                | None              |
-| `--pae`, `--purge_all_encodings`  | Purge all encodings using GET method before warm up                                                         | False             |
-| `--cache_status_header` | Header to check for cache status                                                                                      | x-cache-status    |
-| `--ip`                  | IP (v4 or v6) address to call when purging and caching, useful for secondary server/proxy/load-balancer.              | None              |
+| `--pp`, `--purge_path`  | Path to purge resource using GET method before warm up, when PURGE method is not allowed or desired.                  | None              |
+| `--pae`, `--purge_all_encodings`  | Use with Nginx proxy cache, not needed for Nginx Fast-CGI cache or Varnish. Nginx proxy cache keeps one copy of response for each unique "Accept Encoding" header value.                                                  | False             |
+| `--cache_status_header` | Header for cache status, can be used with Nginx to detect and log cache HIT, MISS, BYPASS etc.                        | x-cache-status    |
+| `--ip`                  | IP (v4 or v6) address to call when purging or caching, useful for secondary server/proxy/load-balancer.               | None              |
 
 ## Advanced options
+
 ### Custom request headers
 
 ```shell
