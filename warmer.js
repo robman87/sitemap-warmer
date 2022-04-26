@@ -108,10 +108,29 @@ export default class Warmer {
             method: "PURGE",
             mode: "cors"
         })
+
+        let description, icon
+        switch (res.status) {
+            case 200:
+                icon = `❄`
+                description = 'purged from cache'
+                break
+            case 404:
+                icon = `🐌️`
+                description = 'was not in cache'
+                break
+            case 405:
+                icon = `🚧`
+                description = 'PURGE method not allowed'
+                break
+        }
+        if (description) {
+            logger.debug(`  ${icon} ${url} ${description} (${res.status})`)
+        }
     }
 
     async fetch(url, headers = { accept: '', accept_encoding: '' }) {
-        logger.debug(`  ⚡️ Warming ${url}`, headers)
+        logger.debug(`  ⚡️ Warming ${url} with headers`, headers)
         const res = await fetch(url, {
             headers: Object.assign(
                 {
@@ -126,7 +145,28 @@ export default class Warmer {
             mode: "cors"
         })
 
-        // No need warmup CSS/JS or compressed response
+        // Headers often used by Nginx proxy/FastCGI caches
+        const cacheStatus = res.headers.get(this.settings.cache_status_header).toUpperCase();
+        if (cacheStatus) {
+            let result, icon
+            switch (cacheStatus) {
+                case 'MISS':
+                    icon = `⚡️ `
+                    result = 'warmed'
+                    break;
+                case 'HIT':
+                    icon = `🔥`
+                    result = 'was already warm'
+                    break;
+                case 'BYPASS':
+                    icon = `🚧`
+                    result = 'bypassed'
+                    break;
+            }
+            logger.debug(`  ${icon} Cache ${result} for ${url} (cache ${cacheStatus})`)
+        }
+
+        // No need warmup CSS/JS or compressed responses
         if (this.settings.warmup_css === false && this.settings.warmup_js === false) {
             return
         }
