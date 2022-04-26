@@ -104,7 +104,7 @@ const argv = yargs(hideBin(process.argv))
 
     .option('pp', {
         alias: 'purge_path',
-        describe: 'Path used for purging resources using GET method instead of PURGE. Use when PURGE method is not available or preferred, e.g. https://doman.com/purge/path_to_purge',
+        describe: 'Path used for purging resources using GET method instead of PURGE. Use when PURGE method is not available or preferred, e.g. https://domain.com/purge/path_to_purge',
         type: 'string',
         default: ''
     })
