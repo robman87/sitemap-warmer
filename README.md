@@ -94,7 +94,7 @@ warmup datuan.dev <URL> <parameter>
 | `--brotli`              | Enables Brotli compression warm up (all modern browsers support it)                                                   | True              |
 | `-q`, `--quiet`         | Suppress the debug log                                                                                                | False             |
 | `-h`, `--headers`       | Add custom headers                                                                                                    | None              |
-| `-p`, `--purge`         | Purge resource before warm up                                                                                         | 0                 |
+| `-p`, `--purge`         | Purge resource before warm up, 1 >= content, 2 >= images                                                              | 0                 |
 | `--pd`, `--purge_delay` | Delay (in milliseconds) after purging resource before warm up                                                         | 100               |
 | `--pp`, `--purge_path`  | Path to purge resource using GET method before warm up                                                                | None              |
 | `--pae`, `--purge_all_encodings`  | Purge all encodings using GET method before warm up                                                         | False             |
