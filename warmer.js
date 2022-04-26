@@ -135,7 +135,7 @@ export default class Warmer {
         switch (res.status) {
             case 200:
                 icon = `❄`
-                description = 'purged from cache'
+                response = 'purged from cache'
                 break
             case 404:
                 icon = `🐌️`
