@@ -53,13 +53,13 @@ const argv = yargs(hideBin(process.argv))
     })
 
     .option('css', {
-        describe: 'Enable CSS images warm up.',
+        describe: 'Enable CSS warm up.',
         type: 'boolean',
         coerce: toBoolean,
         default: true
     })
     .option('js', {
-        describe: 'Enable Javascript images warm up.',
+        describe: 'Enable Javascript warm up.',
         type: 'boolean',
         coerce: toBoolean,
         default: true
