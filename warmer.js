@@ -143,7 +143,7 @@ export default class Warmer {
                         .filter(row => row.includes('Key') || row.includes('Path'))
                     const key = (rows.find(row => row.includes('Key')) + '').split(':').pop().trim()
                     const path = (rows.find(row => row.includes('Path')) + '').split(':').pop().trim()
-                    logger.debug(`Nginx successfully purged key ${key} => path ${path}`)
+                    logger.debug('Nginx successfully purged', { key, path })
                 }
                 break
             case 404:
@@ -177,7 +177,11 @@ export default class Warmer {
         })
 
         // Headers often used by Nginx proxy/FastCGI caches
-        const cacheStatus = this.settings.cache_status_header ? res.headers.get(this.settings.cache_status_header).toUpperCase() : ''
+        const cacheStatus = (
+            this.settings.cache_status_header
+                ? (res.headers.get(this.settings.cache_status_header) || '')
+                : ''
+        ).toUpperCase()
         if (cacheStatus) {
             let result, icon
             switch (cacheStatus) {
