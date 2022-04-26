@@ -106,6 +106,9 @@ const argv = yargs(hideBin(process.argv))
     .describe('cache_status_header', 'Header for cache status, can be used with Nginx.')
     .default('cache_status_header', 'x-cache-status')
 
+    .describe('ip', 'IP to call with host header as SNI to use correct SSL/TLS cert.')
+    .default('ip', '')
+
     .example('$0 domain.com --headers.auth "Bearer secret_token"', 'Add custom auth header')
 
     .argv
@@ -135,6 +138,7 @@ const settings = {
     purge_path: argv.purge_path,
     custom_headers: argv.headers,
     cache_status_header: argv.cache_status_header,
+    ip: argv.ip
 }
 
 settings.sitemap = utils.tryValidURL(settings.sitemap)
