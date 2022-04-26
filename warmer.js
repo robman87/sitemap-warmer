@@ -136,6 +136,15 @@ export default class Warmer {
             case 200:
                 icon = `❄`
                 response = 'purged from cache'
+                // Nginx specific
+                const body = await res.text()
+                if (body.includes('Successful purge')) {
+                    const rows = body.split('\r\n')
+                        .filter(row => row.includes('Key') || row.includes('Path'))
+                    const key = (rows.find(row => row.includes('Key')) + '').split(':').pop().trim()
+                    const path = (rows.find(row => row.includes('Path')) + '').split(':').pop().trim()
+                    logger.debug(`Nginx successfully purged key ${key} => path ${path}`)
+                }
                 break
             case 404:
                 icon = `🐌️`
