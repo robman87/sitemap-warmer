@@ -166,7 +166,7 @@ export default class Warmer {
         })
 
         // Headers often used by Nginx proxy/FastCGI caches
-        const cacheStatus = res.headers.get(this.settings.cache_status_header).toUpperCase();
+        const cacheStatus = this.settings.cache_status_header ? res.headers.get(this.settings.cache_status_header).toUpperCase() : ''
         if (cacheStatus) {
             let result, icon
             switch (cacheStatus) {
@@ -183,7 +183,7 @@ export default class Warmer {
                     result = 'bypassed'
                     break;
             }
-            logger.debug(`  ${icon} Cache ${result} for ${url} (cache ${cacheStatus})`)
+            logger.debug(`  ${icon} Cache ${result} for ${url} (cache ${cacheStatus} => Accept-Encoding: ${headers.accept_encoding})`)
         }
 
         // No need warmup CSS/JS or compressed responses
