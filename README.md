@@ -81,23 +81,23 @@ Usage:
 warmup datuan.dev <URL> <parameter>
 ```
 
-| Parameter           | Description                                                                                                           | Default           |
-|-------------------- |---------------------------------------------------------------------------------------------------------------------  |-----------------  |
-| `-a`, `--all`       | Warm up all URLs in sitemap                                                                                           | False             |
-| `-r`, `--range`     | Only warm up URLs with `lastMod` newer than X seconds.<br> This parameters is ignored if `-a` (`--all`) is provided   | 300s (5 minutes)  |
-| `-d`, `--delay`     | Delay (in milliseconds) between each warm up call.<br> If you using the low-end hosting, keep this value higher       | 500               |
-| `--images`          | Enables images warm up                                                                                                | True              |
-| `--webp`            | Enables webp images warm up                                                                                           | True              |
-| `--avif`            | Enables avif images warm up                                                                                           | True              |
-| `--css`             | Enables CSS warm up                                                                                                   | True              |
-| `--js`              | Enables Javascript warm up                                                                                            | True              |
-| `--brotli`          | Enables Brotli compression warm up (all modern browsers support it)                                                   | True              |
-| `-q`, `--quiet`     | Suppress the debug log                                                                                                | False             |
-| `-p`, `--purge`    | Purge resource before warm up (>=1 for url, >=2 for images)                                                                                                | 0            |
-| `--purge_delay`    | Delay (in milliseconds) after purging resource before warm up                                                                                                | 100            |
-| `--purge_path`    | Path to purge resource using GET method before warm up                                                                                                | None            |
-| `-h`, `--headers`    | Add custom headers                                                                                                | None            |
-| `--cache_status_header`    | Header to check for cache status                                                                                                | x-cache-status            |
+| Parameter               | Description                                                                                                           | Default           |
+|------------------------ |---------------------------------------------------------------------------------------------------------------------  |-----------------  |
+| `-a`, `--all`           | Warm up all URLs in sitemap                                                                                           | False             |
+| `-r`, `--range`         | Only warm up URLs with `lastMod` newer than X seconds.<br> This parameters is ignored if `-a` (`--all`) is provided   | 300s (5 minutes)  |
+| `-d`, `--delay`         | Delay (in milliseconds) between each warm up call.<br> If you using the low-end hosting, keep this value higher       | 500               |
+| `--images`              | Enables images warm up                                                                                                | True              |
+| `--webp`                | Enables webp images warm up                                                                                           | True              |
+| `--avif`                | Enables avif images warm up                                                                                           | True              |
+| `--css`                 | Enables CSS warm up                                                                                                   | True              |
+| `--js`                  | Enables Javascript warm up                                                                                            | True              |
+| `--brotli`              | Enables Brotli compression warm up (all modern browsers support it)                                                   | True              |
+| `-q`, `--quiet`         | Suppress the debug log                                                                                                | False             |
+| `-h`, `--headers`       | Add custom headers                                                                                                    | None              |
+| `-p`, `--purge`         | Purge resource before warm up                                                                                         | 0                 |
+| `--pd`, `--purge_delay` | Delay (in milliseconds) after purging resource before warm up                                                         | 100               |
+| `--pp`, `--purge_path`  | Path to purge resource using GET method before warm up                                                                | None              |
+| `--cache_status_header` | Header to check for cache status                                                                                      | x-cache-status    |
 | `--ip`                  | IP (v4 or v6) address to call when purging and caching, useful for secondary server/proxy/load-balancer.              | None              |
 
 ## Advanced options
@@ -209,8 +209,7 @@ Using IP with https like below will result in "ERR_TLS_CERT_ALTNAME_INVALID" bec
 warmup https://1.2.3.4 --purge 1 --headers.host datuan.dev
 ```
 
-
-# Contributors ✨
+## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 

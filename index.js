@@ -7,6 +7,7 @@ import fetch from 'node-fetch'
 import Logger from 'logplease'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { isIP } from 'node:net'
 
 const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0' + ' domain.com')
@@ -93,21 +94,46 @@ const argv = yargs(hideBin(process.argv))
         choices: [0, 1, 2]
     })
 
-    .describe('purge_delay', 'Delay (in milliseconds) after purging the resources before warm up.')
-    .default('purge_delay', 100)
-    .describe('purge_path', 'Path used for purging resources using GET method instead of PURGE. Use when PURGE method is not available or preferred, e.g. https://www.example.com/purge/path_to_purge')
-    .default('purge_path', '')
+    .option('pd', {
+        alias: 'purge_delay',
+        describe: 'Delay (in milliseconds) after purging the resources before warm up.',
+        type: 'number',
+        coerce: toInt,
+        default: 100
+    })
+
+    .option('pp', {
+        alias: 'purge_path',
+        describe: 'Path used for purging resources using GET method instead of PURGE. Use when PURGE method is not available or preferred, e.g. https://doman.com/purge/path_to_purge',
+        type: 'string',
+        default: ''
+    })
+
+    .option('pae', {
+        alias: 'purge_all_encodings',
+        describe: 'Use with nginx proxy-cache, not needed for nginx fast-cgi-cache or varnish.',
+        type: 'boolean',
+        coerce: toBoolean,
+        default: false
+    })
 
     .option('headers', {
         default: {},
         describe: 'Add custom headers with warmup request.',
     })
 
-    .describe('cache_status_header', 'Header for cache status, can be used with Nginx.')
-    .default('cache_status_header', 'x-cache-status')
+    .option('cache_status_header', {
+        describe: 'Header for cache status, can be used with Nginx.',
+        type: 'string',
+        default: 'x-cache-status'
+    })
 
-    .describe('ip', 'IP to call with host header as SNI to use correct SSL/TLS cert.')
-    .default('ip', '')
+    .option('ip', {
+        describe: 'IP to call with host header as SNI to use correct SSL/TLS cert.',
+        type: 'string',
+        coerce: toIP,
+        default: ''
+    })
 
     .example('$0 domain.com --headers.auth "Bearer secret_token"', 'Add custom auth header')
 
@@ -133,9 +159,11 @@ const settings = {
     warmup_brotli: argv.brotli,
     warmup_webp: argv.webp,
     warmup_avif: argv.avif,
-    purge: argv.purge,
-    purge_delay: parseInt(argv.purge_delay) || 100,
+    purge: argv.purge >= 1,
+    purge_images: argv.purge >= 2,
+    purge_delay: argv.purge_delay,
     purge_path: argv.purge_path,
+    purge_all_encodings: argv.purge_all_encodings,
     custom_headers: argv.headers,
     cache_status_header: argv.cache_status_header,
     ip: argv.ip
@@ -188,4 +216,8 @@ function toBoolean(value) {
 
 function toInt(value) {
     return parseInt(value) || 0
+}
+
+function toIP(value) {
+    return isIP(value) ? value : ''
 }
