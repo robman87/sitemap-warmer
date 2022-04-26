@@ -73,12 +73,17 @@ export default class Warmer {
 
     async warmup_site(url) {
         logger.debug(`🚀 Processing ${url}`)
-        if (this.settings.purge) {
+        if (this.settings.purge && !this.settings.purge_all_encodings) {
             await this.purge(url)
             await this.sleep(this.settings.purge_delay)
         }
-        for (const accept_encoding of Object.keys(this.accept_encoding)) {
-            await this.warmup_url(url, Object.assign({}, this.custom_headers, {accept_encoding: this.accept_encoding[accept_encoding]}))
+        for (const encoding_key of Object.keys(this.accept_encoding)) {
+            const accept_encoding = this.accept_encoding[encoding_key]
+            if (this.settings.purge && this.settings.purge_all_encodings) {
+                await this.purge(url, accept_encoding)
+                await this.sleep(this.settings.purge_delay)
+            }
+            await this.warmup_url(url, Object.assign({}, this.custom_headers, {accept_encoding}))
             await this.sleep(this.settings.delay)
         }
     }
@@ -95,14 +100,15 @@ export default class Warmer {
         }
     }
 
-    async purge(url) {
+    async purge(url, accept_encoding = '') {
         const headers = Object.assign(
             {
                 "cache-control": "no-cache",
                 "pragma": "no-cache",
                 "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
             },
-            this.custom_headers
+            this.custom_headers,
+            { accept_encoding }
         )
         const method = this.settings.purge_url ? "GET" : "PURGE"
 
