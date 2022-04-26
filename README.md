@@ -97,6 +97,7 @@ warmup datuan.dev <URL> <parameter>
 | `-p`, `--purge`         | Purge resource before warm up                                                                                         | 0                 |
 | `--pd`, `--purge_delay` | Delay (in milliseconds) after purging resource before warm up                                                         | 100               |
 | `--pp`, `--purge_path`  | Path to purge resource using GET method before warm up                                                                | None              |
+| `--pae`, `--purge_all_encodings`  | Purge all encodings using GET method before warm up                                                         | False             |
 | `--cache_status_header` | Header to check for cache status                                                                                      | x-cache-status    |
 | `--ip`                  | IP (v4 or v6) address to call when purging and caching, useful for secondary server/proxy/load-balancer.              | None              |
 
