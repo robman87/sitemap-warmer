@@ -112,7 +112,7 @@ export default class Warmer {
         )
         const method = this.settings.purge_url ? "GET" : "PURGE"
 
-        const purge_url = this.settings.purge_url
+        let purge_url = this.settings.purge_url
             ? url.replace(this.settings.domain, this.settings.purge_url)
             : url
 
@@ -122,14 +122,16 @@ export default class Warmer {
             headers
         })
 
-        const res = await fetch(purge_url, {
-            "headers": headers,
-            "body": null,
-            "method": method,
-            "mode": "cors"
-        })
+        const options = {
+            headers,
+            body: null,
+            method,
+            mode: "cors"
+        }
 
-        let description, icon
+        const res = await this.fetch(purge_url, options)
+
+        let response, icon
         switch (res.status) {
             case 200:
                 icon = `❄`
@@ -137,15 +139,15 @@ export default class Warmer {
                 break
             case 404:
                 icon = `🐌️`
-                description = 'was not in cache'
+                response = 'was not in cache'
                 break
             case 405:
                 icon = `🚧`
-                description = `${method} method not allowed`
+                response = `${method} method not allowed`
                 break
         }
-        if (description) {
-            logger.debug(`  ${icon} ${url} ${description} (${res.status})`)
+        if (response) {
+            logger.debug(`  ${icon} ${url} ${response} (${res.status})`)
         }
     }
 
