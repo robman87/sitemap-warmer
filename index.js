@@ -93,10 +93,19 @@ const argv = yargs(hideBin(process.argv))
         choices: [0, 1, 2]
     })
 
+    .describe('purge_delay', 'Delay (in milliseconds) after purging the resources before warm up.')
+    .default('purge_delay', 100)
+    .describe('purge_path', 'Path used for purging resources using GET method instead of PURGE. Use when PURGE method is not available or preferred, e.g. https://www.example.com/purge/path_to_purge')
+    .default('purge_path', '')
+
     .option('headers', {
         default: {},
         describe: 'Add custom headers with warmup request.',
     })
+
+    .describe('cache_status_header', 'Header for cache status, can be used with Nginx.')
+    .default('cache_status_header', 'x-cache-status')
+
     .example('$0 domain.com --headers.auth "Bearer secret_token"', 'Add custom auth header')
 
     .argv
@@ -122,7 +131,10 @@ const settings = {
     warmup_webp: argv.webp,
     warmup_avif: argv.avif,
     purge: argv.purge,
+    purge_delay: parseInt(argv.purge_delay) || 100,
+    purge_path: argv.purge_path,
     custom_headers: argv.headers,
+    cache_status_header: argv.cache_status_header,
 }
 
 settings.sitemap = utils.tryValidURL(settings.sitemap)
@@ -138,6 +150,11 @@ if (settings.sitemap.pathname === '/') {
 }
 
 settings.domain = `${settings.sitemap.protocol}//${settings.sitemap.hostname}`
+
+if (typeof settings.purge_path === 'string' && settings.purge_path.trim() !== '') {
+    settings.purge_url = `${settings.domain}/${settings.purge_path}`
+    settings.purge_url = utils.tryValidURL(settings.purge_url)
+}
 
 // Pre-check for issue: https://github.com/tdtgit/sitemap-warmer/issues/4
 fetch(settings.sitemap.href).then((res) => {
