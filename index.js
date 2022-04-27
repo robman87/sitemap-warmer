@@ -47,54 +47,54 @@ const argv = yargs(hideBin(process.argv))
     .option('img', {
         alias: 'images',
         describe: 'Enable images warm up.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
 
     .option('css', {
         describe: 'Enable CSS warm up.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
     .option('js', {
         describe: 'Enable Javascript warm up.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
 
     .option('webp', {
         describe: 'Enable WebP images warm up.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
     .option('avif', {
         describe: 'Enable AVIF images warm up.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
 
     .option('brotli', {
         describe: 'Enable Brotli compress warm up (Used by all modern browsers, "Accept Encoding: gzip, deflate, br")',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
 
     .option('gzip', {
         describe: 'Enable Gzip compress warm up (For old browsers or non-browser tools, "Accept Encoding: gzip, deflate")',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
 
     .option('deflate', {
         describe: 'Enable Deflate compress warm up (For old browsers or non-browser tools, "Accept Encoding: deflate")',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: true
     })
@@ -126,7 +126,7 @@ const argv = yargs(hideBin(process.argv))
     .option('pae', {
         alias: 'purge_all_encodings',
         describe: 'Use with Nginx proxy cache, not needed for Nginx Fast-CGI cache or Varnish. Nginx proxy cache keeps one copy of response for each unique "Accept Encoding" header value.',
-        type: 'boolean',
+        type: 'string',
         coerce: toBoolean,
         default: false
     })
@@ -227,7 +227,7 @@ fetch(settings.sitemap.href, { method: 'HEAD' }).then((res) => {
 })
 
 function toBoolean(value) {
-    return ['1', 'true'].includes(`${value}`)
+    return ['1', 'true'].includes(`${value}`) // empty string
 }
 
 function toInt(value) {
