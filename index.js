@@ -196,16 +196,16 @@ fetch(settings.sitemap.href).then((res) => {
 }).then(() => {
     logger.info(`📬 Getting sitemap from ${settings.sitemap.href}`)
 
-    const sitemapXMLParser = new SitemapXMLParser(settings.sitemap.href, { delay: 3000 })
-    sitemapXMLParser.fetch().then(urls => {
-        let sitemap = new Sitemap(settings)
-        urls.forEach(url => {
-            sitemap.addURL(url)
-        })
-
-        let warmer = new Warmer(sitemap, settings)
-        warmer.warmup().then(r => r)
+    const sitemapXMLParser = new SitemapXMLParser(settings.sitemap.href, {delay: 3000})
+    return sitemapXMLParser.fetch()
+}).then(urls => {
+    const sitemap = new Sitemap(settings)
+    urls.forEach(url => {
+        sitemap.addURL(url)
     })
+
+    const warmer = new Warmer(sitemap, settings)
+    return warmer.warmup()
 }).catch(error => {
     logger.error(error)
 })
