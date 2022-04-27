@@ -51,7 +51,8 @@ export default class Warmer {
     }
 
     async warmup() {
-        if (Object.values(this.url).length === 0) {
+        const urls =  Object.keys(this.url)
+        if (!urls.length) {
             logger.info('📫 No URLs need to warm up. You might want to using parameter --range or --all. Using command `warmup -h` for more information.')
             return
         }
@@ -63,25 +64,39 @@ export default class Warmer {
             logger.info(`✅  Done. Prepare warming URLs newer than ${this.settings.newer_than}s (${utils.toHumans(this.settings.newer_than)})`)
         }
 
-        for (const url of Object.keys(this.url)) {
-            await this.warmup_site(url)
+        logger.info(`🕸  Starting warming of ${urls.length} URLs...`)
+        let count = 0
+        for (const url of urls) {
+            await this.warmup_site(url, ++count, urls.length)
         }
 
-        for (let image of this.images) {
-            await this.warmup_image(image)
+        const images = Object.values(this.images)
+        if (images.length) {
+            logger.info(`🕸  Starting warming of ${images.length} images...`)
+            count = 0
+            for (let image of images) {
+                await this.warmup_image(image, ++count, images.length)
+            }
         }
 
-        logger.info(`📫 Warming up all site's assets, stay tuned!`)
-
-        for (let url of this.assets) {
-            await this.warmup_site(utils.tryValidURL(url))
+        this.assets = new Set(
+            Array.from(this.assets.values())
+                .map(utils.tryValidURL)
+                .filter(url => !!url)
+        )
+        if (this.assets.size) {
+            logger.info(`🕸  Starting warming of ${this.assets.size} assets...`)
+            count = 0
+            for (let url of this.assets) {
+                await this.warmup_site(url, ++count, this.assets.size)
+            }
         }
 
-        logger.info(`📫 Done! Warm up total ${Object.values(this.url).length} URLs (included ${this.images.length} images) and ${this.assets.size} assets. Have fun!`)
+        logger.info(`📫 Done! Warm up total ${urls.length} URLs (included ${images.length} images) and ${this.assets.size} assets. Have fun!`)
     }
 
-    async warmup_site(url) {
-        logger.debug(`🚀 Processing ${url}`)
+    async warmup_site(url, current = 0, total = 0) {
+        logger.debug(`🚀  Processing ${url} ${current}/${total} (${(current / total * 100).toFixed(2)}%)`)
 
         const { purge, purge_all_encodings, purge_delay, delay } = this.settings
 
@@ -100,8 +115,8 @@ export default class Warmer {
         }
     }
 
-    async warmup_image(image_url) {
-        logger.debug(`🚀📷 Processing image ${image_url}`)
+    async warmup_image(image_url, current = 0, total = 0) {
+        logger.debug(`🚀📷 Processing image ${image_url} ${current}/${total} (${(current / total * 100).toFixed(2)}%)`)
         const { purge_images, purge_delay, delay } = this.settings
         if (purge_images) {
             await this.purge(image_url)
@@ -115,11 +130,6 @@ export default class Warmer {
 
     async purge(url, accept_encoding = '') {
         const headers = Object.assign(
-            {
-                "cache-control": "no-cache",
-                "pragma": "no-cache",
-                "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
-            },
             this.custom_headers,
             { accept_encoding }
         )
@@ -129,14 +139,21 @@ export default class Warmer {
             ? url.replace(this.settings.domain, this.settings.purge_url)
             : url
 
-        logger.debug(`  ⚡️ Purging ${url}`, {
+        logger.debug('  🗑️ Purging', {
             method,
             url: purge_url,
-            headers
+            accept_encoding: headers.accept_encoding
         })
 
         const options = {
-            headers,
+            headers: Object.assign(
+                {
+                    "cache-control": "no-cache",
+                    "pragma": "no-cache",
+                    "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
+                },
+                headers
+            ),
             body: null,
             method,
             mode: "cors"
@@ -156,7 +173,7 @@ export default class Warmer {
                         .filter(row => row.includes('Key') || row.includes('Path'))
                     const key = (rows.find(row => row.includes('Key')) + '').split(':').pop().trim()
                     const path = (rows.find(row => row.includes('Path')) + '').split(':').pop().trim()
-                    logger.debug('Nginx successfully purged', { key, path })
+                    logger.debug('  🤖 Nginx successfully purged', { key, path })
                 }
                 break
             case 404:
@@ -174,7 +191,7 @@ export default class Warmer {
     }
 
     async warmup_url(url, headers = { accept: '', accept_encoding: '' }, retry = true) {
-        logger.debug(`  ⚡️ Warming ${url} (Accept Encoding: ${headers.accept_encoding})`)
+        logger.debug(`  🔥️ Warming ${url} (Accept Encoding: ${headers.accept_encoding})`)
 
         let res
         try {
@@ -246,7 +263,7 @@ export default class Warmer {
             options.agent = () => new httpMod.Agent({ servername: host })
             url = url.replace(host, this.settings.ip)
 
-            logger.debug(`${options.method.toUpperCase()} ${url} with host ${host}`)
+            logger.debug(`  ${options.method.toUpperCase()} ${url} with host ${host}`)
         }
 
         return fetch(url, options)
