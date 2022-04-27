@@ -116,7 +116,7 @@ export default class Warmer {
         )
         const method = this.settings.purge_url ? "GET" : "PURGE"
 
-        let purge_url = this.settings.purge_url
+        const purge_url = this.settings.purge_url
             ? url.replace(this.settings.domain, this.settings.purge_url)
             : url
 
