@@ -170,13 +170,13 @@ const settings = {
 }
 
 settings.sitemap = utils.tryValidURL(settings.sitemap)
-settings.sitemap = new URL(settings.sitemap)
 
-if (utils.isValidURL(settings.sitemap) === false) {
+if (!settings.sitemap) {
     logger.error(`Please specific an valid URL! Your URL ${settings.sitemap} seems not correct.`)
     process.exit()
 }
 
+settings.sitemap = new URL(settings.sitemap)
 if (settings.sitemap.pathname === '/') {
     settings.sitemap = new URL('/sitemap.xml', settings.sitemap.href)
 }
