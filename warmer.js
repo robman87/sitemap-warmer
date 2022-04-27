@@ -164,21 +164,35 @@ export default class Warmer {
         }
     }
 
-    async warmup_url(url, headers = { accept: '', accept_encoding: '' }) {
-        logger.debug(`  ⚡️ Warming ${url}`, headers)
-        const res = await this.fetch(url, {
-            headers: Object.assign(
+    async warmup_url(url, headers = { accept: '', accept_encoding: '' }, retry = true) {
+        logger.debug(`  ⚡️ Warming ${url} (Accept Encoding: ${headers.accept_encoding})`)
+
+        let res
+        try {
+            res = await this.fetch(
+                url,
                 {
-                    "cache-control": "no-cache",
-                    "pragma": "no-cache",
-                    "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
-                },
-                headers
-            ),
-            body: null,
-            method: "GET",
-            mode: "cors"
-        })
+                    headers: Object.assign(
+                        {
+                            "cache-control": "no-cache",
+                            "pragma": "no-cache",
+                            "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
+                        },
+                        headers
+                    ),
+                    body: null,
+                    method: "GET",
+                    mode: "cors"
+                }
+            )
+        } catch (err) {
+            if (retry) {
+                logger.debug(`  Failed warming ${url}! Retrying...`)
+                return this.warmup_url(url, headers, false)
+            }
+            logger.info(`  Warming ${url} failed, skipping...`)
+            return
+        }
 
         // Headers often used by Nginx proxy/FastCGI caches
         const cacheStatus = (
