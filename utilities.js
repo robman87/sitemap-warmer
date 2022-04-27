@@ -1,5 +1,4 @@
 import normalize_url from 'normalize-url'
-import url from 'node:url'
 
 class Utilities {
     isValidURL(string) {
@@ -21,8 +20,8 @@ class Utilities {
             theUrl = new URL(theUrl, hostname).href
         }
 
-        // Missing protocol URL. Must be placed after relative URL convert
-        if (url.parse(theUrl).protocol === null) {
+        // Missing protocol URL
+        if (theUrl.indexOf('https://') < 0 && theUrl.indexOf('http://') < 0) {
             theUrl = `https://${theUrl}`
         }
 
