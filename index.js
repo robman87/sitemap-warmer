@@ -189,8 +189,8 @@ if (typeof settings.purge_path === 'string' && settings.purge_path.trim() !== ''
 }
 
 // Pre-check for issue: https://github.com/tdtgit/sitemap-warmer/issues/4
-fetch(settings.sitemap.href).then((res) => {
-    if (res.ok === false) {
+fetch(settings.sitemap.href, { method: 'HEAD' }).then((res) => {
+    if (!res.ok) {
         throw new Error(res.statusText)
     }
 }).then(() => {
