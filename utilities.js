@@ -14,7 +14,10 @@ class Utilities {
 
     tryValidURL(theUrl, hostname) {
         // Relative URL
-        if (theUrl.indexOf('//') === -1 && theUrl.indexOf('/') === 0) {
+        if (theUrl.indexOf('//') < 0 && theUrl.indexOf('/') === 0) {
+            if (!this.isValidURL(hostname)) {
+                return false
+            }
             theUrl = new URL(theUrl, hostname).href
         }
 
