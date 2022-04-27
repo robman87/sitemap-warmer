@@ -203,10 +203,12 @@ export default class Warmer {
             return
         }
 
+        const { cache_status_header, warmup_css, warmup_js } = this.settings
+
         // Headers often used by Nginx proxy/FastCGI caches
         const cacheStatus = (
-            this.settings.cache_status_header
-                ? (res.headers.get(this.settings.cache_status_header) || '')
+            cache_status_header
+                ? (res.headers.get(cache_status_header) || '')
                 : ''
         ).toUpperCase()
         if (cacheStatus) {
@@ -228,17 +230,11 @@ export default class Warmer {
             logger.debug(`  ${icon} Cache ${result} for ${url} (cache ${cacheStatus} => Accept-Encoding: ${headers.accept_encoding})`)
         }
 
-        // No need warmup CSS/JS or compressed responses
-        if (this.settings.warmup_css === false && this.settings.warmup_js === false) {
-            return
+        // No need warmup CSS/JS
+        if (warmup_css || warmup_js) {
+            // Send HTML response for parsing CSS/JS
+            this.html(await res.text())
         }
-        if (headers.accept_encoding !== 'deflate') {
-            return
-        }
-
-        // Send HTML response for parsing CSS/JS
-        const data = await res.text()
-        this.html(data)
     }
 
     async fetch(url, options) {
