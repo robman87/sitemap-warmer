@@ -11,6 +11,15 @@ class Utilities {
         }
     }
 
+    hasSameDomain(url, domain) {
+        try {
+            const src = this.tryValidURL(url, domain)
+            return src && (new URL(src)).hostname === domain
+        } catch (err) {
+            return false
+        }
+    }
+
     tryValidURL(theUrl, hostname) {
         // Relative URL
         if (theUrl.indexOf('//') < 0 && theUrl.indexOf('/') === 0) {

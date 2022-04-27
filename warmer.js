@@ -62,10 +62,7 @@ export default class Warmer {
         logger.info(`📫 Warming up all site's assets, stay tuned!`)
 
         for (let url of this.assets) {
-            url = utils.tryValidURL(url, `${this.settings.sitemap.protocol}//${this.settings.sitemap.hostname}`)
-            if (url !== false) {
-                await this.warmup_site(url)
-            }
+            await this.warmup_site(utils.tryValidURL(url))
         }
 
         logger.info(`📫 Done! Warm up total ${Object.values(this.url).length} URLs (included ${this.images.length} images) and ${this.assets.size} assets. Have fun!`)
@@ -254,17 +251,26 @@ export default class Warmer {
     html(html) {
         const root = parse(html)
 
-        if (this.settings.warmup_js) {
+        const { domain, warmup_js, warmup_css } = this.settings
+
+        if (warmup_js) {
             const scripts = root.querySelectorAll('script[src]')
             scripts.forEach(elem => {
-                this.assets.add(elem.attributes.src)
+                const { src } = elem.attributes
+                if (utils.hasSameDomain(src, domain)) {
+                    this.assets.add(src)
+                }
+
             })
         }
 
-        if (this.settings.warmup_css) {
+        if (warmup_css) {
             const styles = root.querySelectorAll('link[href][rel="stylesheet"]')
             styles.forEach(elem => {
-                this.assets.add(elem.attributes.href)
+                const { href } = elem.attributes
+                if (utils.hasSameDomain(href, domain)) {
+                    this.assets.add(href)
+                }
             })
         }
     }
