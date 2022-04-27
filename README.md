@@ -103,6 +103,16 @@ warmup datuan.dev <URL> <parameter>
 | `--cache_status_header` | Header for cache status, can be used with Nginx to detect and log cache HIT, MISS, BYPASS etc.                        | x-cache-status    |
 | `--ip`                  | IP (v4 or v6) address to call when purging or caching, useful for secondary server/proxy/load-balancer.               | None              |
 
+## Examples
+
+Modern browsers only request brotli encoding when available but accept gzip or deflate.
+Default behaviour for this script is to warm each url in the sitemap with brotli, gzip and deflate encodings, which means each url will be fetched 3 times. 
+
+This example only warms urls for modern browsers, so only one request for each url.
+```shell
+warmup datuan.dev --all --gzip 0 --deflate 0
+```
+
 ## Advanced options
 
 ### Custom request headers
