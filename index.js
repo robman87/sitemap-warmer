@@ -85,6 +85,20 @@ const argv = yargs(hideBin(process.argv))
         default: true
     })
 
+    .option('gzip', {
+        describe: 'Enable Gzip compress warm up (For old browsers or non-browser tools, "Accept Encoding: gzip, deflate")',
+        type: 'boolean',
+        coerce: toBoolean,
+        default: true
+    })
+
+    .option('deflate', {
+        describe: 'Enable Deflate compress warm up (For old browsers or non-browser tools, "Accept Encoding: deflate")',
+        type: 'boolean',
+        coerce: toBoolean,
+        default: true
+    })
+
     .option('p', {
         alias: 'purge',
         describe: 'Enable purging the resources before warm up (0 = no purging, 1 >= page content, 2 >= images).',
@@ -157,6 +171,8 @@ const settings = {
     warmup_css: argv.css,
     warmup_js: argv.js,
     warmup_brotli: argv.brotli,
+    warmup_gzip: argv.gzip,
+    warmup_deflate: argv.deflate,
     warmup_webp: argv.webp,
     warmup_avif: argv.avif,
     purge: argv.purge >= 1,

@@ -9,32 +9,44 @@ const logger = Logger.create('warmer')
 
 export default class Warmer {
     constructor(sitemap, settings) {
+        const {
+            warmup_brotli,
+            warmup_gzip,
+            warmup_deflate,
+            warmup_avif,
+            warmup_webp,
+            custom_headers
+        } = settings
+
+        const accept_encoding = {}
+        if (warmup_brotli) {
+            accept_encoding.br = 'gzip, deflate, br'
+        }
+        if (warmup_gzip) {
+            accept_encoding.gzip = 'gzip, deflate'
+        }
+        if (warmup_deflate || !Object.keys(accept_encoding).length) {
+            accept_encoding.deflate = 'deflate'
+        }
+
+        const accept_default = 'image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        const accept = {
+            default: accept_default
+        }
+        if (warmup_avif) {
+            accept.avif = `image/avif,image/webp,${accept_default}`
+        }
+        if (warmup_webp) {
+            accept.webp = `image/webp,${accept_default}`
+        }
+
         this.settings = settings
-
-        this.custom_headers = {}
-        if (this.settings.custom_headers) {
-            Object.assign(this.custom_headers, this.settings.custom_headers)
-        }
-
-        this.accept_encoding = []
-        if (this.settings.warmup_brotli) {
-            this.accept_encoding.br = 'gzip, deflate, br'
-        }
-        this.accept_encoding.gzip = 'gzip, deflate'
-        this.accept_encoding.deflate = 'deflate'
-
-        this.accept = []
-        if (this.settings.warmup_avif) {
-            this.accept.avif = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
-        }
-        if (this.settings.warmup_webp) {
-            this.accept.webp = 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
-        }
-        this.accept.default = 'image/apng,image/svg+xml,image/*,*/*;q=0.8'
-
+        this.accept_encoding = accept_encoding
+        this.accept = accept
+        this.custom_headers = custom_headers
         this.sitemap = sitemap
-        this.url = this.sitemap.getURLs()
-        this.images = this.sitemap.getImages()
+        this.url = sitemap.getURLs()
+        this.images = sitemap.getImages()
         this.assets = new Set()
     }
 

@@ -92,6 +92,8 @@ warmup datuan.dev <URL> <parameter>
 | `--css`                 | Enables CSS warm up                                                                                                   | True              |
 | `--js`                  | Enables Javascript warm up                                                                                            | True              |
 | `--brotli`              | Enable Brotli compress warm up. Used by all modern browsers, "Accept Encoding: gzip, deflate, br".                    | True              |
+| `--gzip`                | Enable Gzip compress warm up. Not used by modern browsers, "Accept Encoding: gzip, deflate".                          | True              |
+| `--deflate`             | Enable deflate warm up. Not used by modern browsers, "Accept Encoding: deflate".                                      | True              |
 | `-q`, `--quiet`         | Suppress the debug log                                                                                                | False             |
 | `-h`, `--headers`       | Add custom headers, for instance Host, Authorization, User-Agent etc.                                                 | None              |
 | `-p`, `--purge`         | Purge resource before warm up, 0 = purging disabled, 1 >= content, 2 >= images                                        | 0                 |
