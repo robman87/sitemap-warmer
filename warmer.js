@@ -73,30 +73,34 @@ export default class Warmer {
 
     async warmup_site(url) {
         logger.debug(`🚀 Processing ${url}`)
-        if (this.settings.purge && !this.settings.purge_all_encodings) {
+
+        const { purge, purge_all_encodings, purge_delay, delay } = this.settings
+
+        if (purge && !purge_all_encodings) {
             await this.purge(url)
-            await this.sleep(this.settings.purge_delay)
+            await this.sleep(purge_delay)
         }
         for (const encoding_key of Object.keys(this.accept_encoding)) {
             const accept_encoding = this.accept_encoding[encoding_key]
-            if (this.settings.purge && this.settings.purge_all_encodings) {
+            if (purge && purge_all_encodings) {
                 await this.purge(url, accept_encoding)
-                await this.sleep(this.settings.purge_delay)
+                await this.sleep(purge_delay)
             }
             await this.warmup_url(url, Object.assign({}, this.custom_headers, {accept_encoding}))
-            await this.sleep(this.settings.delay)
+            await this.sleep(delay)
         }
     }
 
     async warmup_image(image_url) {
         logger.debug(`🚀📷 Processing image ${image_url}`)
-        if (this.settings.purge_images) {
+        const { purge_images, purge_delay, delay } = this.settings
+        if (purge_images) {
             await this.purge(image_url)
-            await this.sleep(this.settings.purge_delay)
+            await this.sleep(purge_delay)
         }
         for (const accept of Object.keys(this.accept)) {
             await this.warmup_url(image_url, Object.assign({}, this.custom_headers, {accept: this.accept[accept]}))
-            await this.sleep(this.settings.delay)
+            await this.sleep(delay)
         }
     }
 
