@@ -6,10 +6,10 @@
   "dependencies": {
     "datuan-sitemap-parser": "0.0.4",
     "logplease": "^1.2.15",
-    "node-fetch": "^3.2.10",
-    "node-html-parser": "^6.1.1",
-    "normalize-url": "^7.2.0",
-    "yargs": "^17.5.1"
+    "node-fetch": "^3.3.0",
+    "node-html-parser": "^6.1.4",
+    "normalize-url": "^8.0.0",
+    "yargs": "^17.6.2"
   },
   "bin": {
     "warmup": "index.js"
@@ -38,6 +38,6 @@
     "test": "node index.js https://raw.githubusercontent.com/tdtgit/sitemap-warmer/master/tests/sitemap.xml"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   }
 }
