@@ -143,6 +143,28 @@ export default function parseCliParams() {
         default: ''
     })
 
+     // Cloudflare
+    .option('cf_email', {
+        alias: 'cloudflare_email',
+        describe: 'Cloudflare account email to purge Cloudflare proxy-cache.',
+        type: 'string',
+        default: ''
+    })
+
+    .option('cf_zone', {
+         alias: 'cloudflare_zone_id',
+         describe: 'Cloudflare zone id to purge Cloudflare proxy-cache.',
+         type: 'string',
+         default: ''
+    })
+
+    .option('cf_apikey', {
+         alias: 'cloudflare_api_key',
+         describe: 'Cloudflare API key to purge Cloudflare proxy-cache.',
+         type: 'string',
+         default: ''
+    })
+
     .example('$0 domain.com --headers.authorization "Bearer secret_token"', 'Add custom auth header')
 
     .argv

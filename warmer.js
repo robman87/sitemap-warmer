@@ -15,7 +15,10 @@ export default class Warmer {
             warmup_deflate,
             warmup_avif,
             warmup_webp,
-            custom_headers
+            custom_headers,
+            cloudflare_email,
+            cloudflare_zone_id,
+            cloudflare_api_key
         } = settings
 
         const accept_encoding = {}
@@ -39,6 +42,12 @@ export default class Warmer {
         if (warmup_webp) {
             accept.webp = `image/webp,${accept_default}`
         }
+
+        this.cloudflare_purge_enabled = settings.purge &&
+            [cloudflare_email, cloudflare_zone_id, cloudflare_api_key]
+                .every((value) =>
+                    typeof value == 'string' && value.length
+                )
 
         this.settings = settings
         this.accept_encoding = accept_encoding
@@ -101,13 +110,16 @@ export default class Warmer {
 
         const { purge, purge_all_encodings, purge_delay, delay } = this.settings
 
-        if (purge && !purge_all_encodings) {
+        if (
+            this.cloudflare_purge_enabled ||
+            (purge && !purge_all_encodings)
+        ) {
             await this.purge(url)
             await utils.sleep(purge_delay)
         }
         for (const encoding_key of Object.keys(this.accept_encoding)) {
             const accept_encoding = this.accept_encoding[encoding_key]
-            if (purge && purge_all_encodings) {
+            if (purge && purge_all_encodings && !this.cloudflare_purge_enabled) {
                 await this.purge(url, accept_encoding)
                 await utils.sleep(purge_delay)
             }
@@ -129,7 +141,33 @@ export default class Warmer {
         }
     }
 
-    async purge(url, accept_encoding = '') {
+    async purge_cloudflare(url) {
+        logger.debug('  🗑️ Purging', {
+            method: 'DELETE',
+            url: url
+        })
+
+        if (!Array.isArray(url)) {
+            url = [url]
+        }
+
+        const { cloudflare_email, cloudflare_zone_id, cloudflare_api_key } = this.settings
+
+        return this.fetch(`https://api.cloudflare.com/client/v4/zones/${cloudflare_zone_id}/purge_cache`, {
+            method: 'DELETE',
+            headers: {
+                'User-Agent': this.user_agent,
+                'X-Auth-Email': cloudflare_email,
+                'X-Auth-Key': cloudflare_api_key,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                files: url,
+            }),
+        })
+    }
+
+    async purge_proxy(url, accept_encoding = '') {
         const headers = Object.assign(
             this.custom_headers,
             { accept_encoding }
@@ -160,8 +198,14 @@ export default class Warmer {
             mode: "cors"
         }
 
-        const res = await this.fetch(purge_url, options)
-
+        return this.fetch(purge_url, options)
+    }
+    async purge(url, accept_encoding = '') {
+        const res = await (
+            this.cloudflare_purge_enabled
+                ? this.purge_cloudflare(url)
+                : this.purge_proxy(url, accept_encoding)
+        )
         let response, icon
         switch (res.status) {
             case 200:
@@ -183,7 +227,7 @@ export default class Warmer {
                 break
             case 405:
                 icon = `🚧`
-                response = `${method} method not allowed`
+                response = `${res.method} method not allowed`
                 break
         }
         if (response) {
@@ -223,12 +267,25 @@ export default class Warmer {
 
         const { cache_status_header, warmup_css, warmup_js } = this.settings
 
-        // Headers often used by Nginx proxy/FastCGI caches
+        // Check for headers used by Nginx proxy/FastCGI caches
+        this.log_response_cache_status(url, headers.accept_encoding, res, cache_status_header)
+        // Check for Cloudflare cache headers
+        this.log_response_cache_status(url, headers.accept_encoding, res, 'Cf-Cache-Status', 'Cloudflare cache')
+
+        // No need warmup CSS/JS
+        if (warmup_css || warmup_js) {
+            // Send HTML response for parsing CSS/JS
+            this.html(await res.text())
+        }
+    }
+
+    log_response_cache_status(url, accept_encoding, res, cache_status_header, cache_type = 'Cache') {
         const cacheStatus = (
             cache_status_header
                 ? (res.headers.get(cache_status_header) || '')
                 : ''
         ).toUpperCase()
+
         if (cacheStatus) {
             let result, icon
             switch (cacheStatus) {
@@ -240,19 +297,16 @@ export default class Warmer {
                     icon = `🔥`
                     result = 'was already warm'
                     break;
-                case 'BYPASS':
+                case 'BYPASS': // nginx/varnish
+                case 'DYNAMIC': // cloudflare
                     icon = `🚧`
                     result = 'bypassed'
                     break;
             }
-            logger.debug(`  ${icon} Cache ${result} for ${url} (cache ${cacheStatus} => Accept-Encoding: ${headers.accept_encoding})`)
+            logger.debug(`  ${icon} Cache ${result} for ${url} (${cache_type} ${cacheStatus} => Accept-Encoding: ${accept_encoding})`)
+            return cacheStatus
         }
-
-        // No need warmup CSS/JS
-        if (warmup_css || warmup_js) {
-            // Send HTML response for parsing CSS/JS
-            this.html(await res.text())
-        }
+        return false
     }
 
     async fetch(url, options) {

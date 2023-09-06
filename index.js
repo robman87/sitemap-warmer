@@ -39,7 +39,10 @@ const settings = {
     purge_all_encodings: argv.purge_all_encodings,
     custom_headers: argv.headers,
     cache_status_header: argv.cache_status_header,
-    ip: argv.ip
+    ip: argv.ip,
+    cloudflare_email: argv.cloudflare_email,
+    cloudflare_api_key: argv.cloudflare_api_key,
+    cloudflare_zone_id: argv.cloudflare_zone_id
 }
 
 settings.sitemap = utils.tryValidURL(settings.sitemap)
