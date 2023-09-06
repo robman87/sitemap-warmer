@@ -76,6 +76,10 @@ class Utilities {
 
         return returnText.trim()
     }
+
+    async sleep(millis) {
+        return new Promise(resolve => setTimeout(resolve, millis))
+    }
 }
 
 const utils = new Utilities()

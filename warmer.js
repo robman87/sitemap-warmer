@@ -102,16 +102,16 @@ export default class Warmer {
 
         if (purge && !purge_all_encodings) {
             await this.purge(url)
-            await this.sleep(purge_delay)
+            await utils.sleep(purge_delay)
         }
         for (const encoding_key of Object.keys(this.accept_encoding)) {
             const accept_encoding = this.accept_encoding[encoding_key]
             if (purge && purge_all_encodings) {
                 await this.purge(url, accept_encoding)
-                await this.sleep(purge_delay)
+                await utils.sleep(purge_delay)
             }
             await this.warmup_url(url, Object.assign({}, this.custom_headers, {accept_encoding}))
-            await this.sleep(delay)
+            await utils.sleep(delay)
         }
     }
 
@@ -120,11 +120,11 @@ export default class Warmer {
         const { purge_images, purge_delay, delay } = this.settings
         if (purge_images) {
             await this.purge(image_url)
-            await this.sleep(purge_delay)
+            await utils.sleep(purge_delay)
         }
         for (const accept of Object.keys(this.accept)) {
             await this.warmup_url(image_url, Object.assign({}, this.custom_headers, {accept: this.accept[accept]}))
-            await this.sleep(delay)
+            await utils.sleep(delay)
         }
     }
 
@@ -267,10 +267,6 @@ export default class Warmer {
         }
 
         return fetch(url, options)
-    }
-
-    async sleep(millis) {
-        return new Promise(resolve => setTimeout(resolve, millis))
     }
 
     html(html) {
