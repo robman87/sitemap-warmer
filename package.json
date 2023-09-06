@@ -6,10 +6,10 @@
   "dependencies": {
     "datuan-sitemap-parser": "0.0.4",
     "logplease": "^1.2.15",
-    "node-fetch": "^3.3.0",
-    "node-html-parser": "^6.1.4",
+    "node-fetch": "^3.3.2",
+    "node-html-parser": "^6.1.6",
     "normalize-url": "^8.0.0",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.2"
   },
   "bin": {
     "warmup": "index.js"
