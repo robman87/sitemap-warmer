@@ -48,6 +48,7 @@ export default class Warmer {
         this.url = sitemap.getURLs()
         this.images = sitemap.getImages()
         this.assets = new Set()
+        this.user_agent = 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
     }
 
     async warmup() {
@@ -150,7 +151,7 @@ export default class Warmer {
                 {
                     "cache-control": "no-cache",
                     "pragma": "no-cache",
-                    "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
+                    "user-agent": this.user_agent
                 },
                 headers
             ),
@@ -202,7 +203,7 @@ export default class Warmer {
                         {
                             "cache-control": "no-cache",
                             "pragma": "no-cache",
-                            "user-agent": 'datuan.dev - Cache Warmer (https://github.com/tdtgit/sitemap-warmer)'
+                            "user-agent": this.user_agent
                         },
                         headers
                     ),
