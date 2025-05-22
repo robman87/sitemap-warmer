@@ -37,6 +37,6 @@
     "test": "node index.js https://raw.githubusercontent.com/tdtgit/sitemap-warmer/master/tests/sitemap.xml"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   }
 }
