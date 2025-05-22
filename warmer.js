@@ -10,6 +10,7 @@ const logger = Logger.create('warmer')
 export default class Warmer {
     constructor(sitemap, settings) {
         const {
+            warmup_zstd,
             warmup_brotli,
             warmup_gzip,
             warmup_deflate,
@@ -22,6 +23,9 @@ export default class Warmer {
         } = settings
 
         const accept_encoding = {}
+        if (warmup_zstd) {
+            accept_encoding.zstd = 'gzip, deflate, br, zstd'
+        }
         if (warmup_brotli) {
             accept_encoding.br = 'gzip, deflate, br'
         }

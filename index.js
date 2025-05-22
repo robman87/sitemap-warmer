@@ -27,6 +27,7 @@ const settings = {
     warmup_images: argv.images,
     warmup_css: argv.css,
     warmup_js: argv.js,
+    warmup_zstd: argv.zstd,
     warmup_brotli: argv.brotli,
     warmup_gzip: argv.gzip,
     warmup_deflate: argv.deflate,

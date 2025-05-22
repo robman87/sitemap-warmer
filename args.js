@@ -72,7 +72,13 @@ export default function parseCliParams() {
         default: true
     })
 
-    .option('brotli', {
+    .option('zstd', {
+        describe: 'Enable Zstd compress warm up (Used by all modern browsers, "Accept Encoding: gzip, deflate, br, zstd")',
+        type: 'string',
+        coerce: toBoolean,
+        default: true
+    })
+     .option('brotli', {
         describe: 'Enable Brotli compress warm up (Used by all modern browsers, "Accept Encoding: gzip, deflate, br")',
         type: 'string',
         coerce: toBoolean,

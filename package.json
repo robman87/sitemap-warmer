@@ -33,7 +33,6 @@
   },
   "homepage": "https://github.com/tdtgit/sitemap-warmer",
   "description": "A CLI script built to help you warm up the website cache by scanning through the `sitemap.xml`. This utility help to warm up website in major encoding like `brotli`, `gzip`, warm up images by various encoding like AVIF, WebP.",
-  "devDependencies": {},
   "scripts": {
     "test": "node index.js https://raw.githubusercontent.com/tdtgit/sitemap-warmer/master/tests/sitemap.xml"
   },
